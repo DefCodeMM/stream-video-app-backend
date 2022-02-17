@@ -10,7 +10,7 @@ import { UserModule } from './module/user.module';
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      'mongodb://admin:password@mongodb:27017/test'
+      `mongodb+srv://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@cluster0.dvdwf.mongodb.net/${process.env.MONGO_TABLE_NAME}?retryWrites=true&w=majority`
     ),
     UserModule,
   ],
