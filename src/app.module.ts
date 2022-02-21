@@ -11,7 +11,7 @@ import { UserModule } from './module/user.module';
   imports: [
     ConfigModule.forRoot(),
     MongooseModule.forRoot(
-      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/testowa`,
+      `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/${process.env.MONGO_TABLE_NAME}`,
     ),
     UserModule,
   ],

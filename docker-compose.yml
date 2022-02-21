@@ -14,7 +14,9 @@ services:
     volumes:
       - .:/workspace/server
       - /workspace/server/node_modules
-    restart: always
+    networks:
+      - stream-video-app-network
+    restart: unless-stopped
     depends_on:
       - mongodb
 
@@ -22,15 +24,21 @@ services:
     image: mongo
     container_name: mongodb
     environment:
-      - MONGO_INITDB_DATABASE=testowa
-      - MONGO_INITDB_ROOT_USERNAME=DefCodeMM
-      - MONGO_INITDB_ROOT_PASSWORD=DefCodeMM
+      - MONGO_INITDB_DATABASE=${MONGO_TABLE_NAME}
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+    env_file: 
+    - .env
     ports:
       - '27017-27019:27017-27019'
     volumes: 
       - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
       - ./mongo-data:/data/db
+    networks:
+      - stream-video-app-network
     restart: always
 
-# networks:
-#     nestjs-network:
+networks:
+    stream-video-app-network:
+      driver: bridge
+      name: stream-video-app-network

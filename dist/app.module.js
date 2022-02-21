@@ -19,7 +19,7 @@ AppModule = __decorate([
     (0, common_1.Module)({
         imports: [
             config_1.ConfigModule.forRoot(),
-            mongoose_1.MongooseModule.forRoot(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/testowa`),
+            mongoose_1.MongooseModule.forRoot(`mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@mongodb:27017/${process.env.MONGO_TABLE_NAME}`),
             user_module_1.UserModule,
         ],
         controllers: [app_controller_1.AppController],
