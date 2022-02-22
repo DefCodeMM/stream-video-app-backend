@@ -3,8 +3,6 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { from, Observable } from 'rxjs';
-import { map, switchMap } from 'rxjs/operators';
 import { User } from 'src/auth/entity/user.model';
 
 
@@ -12,49 +10,33 @@ import { User } from 'src/auth/entity/user.model';
 export class AuthService {
     constructor(@InjectModel('User') private readonly userModel: Model<User>, private jwtService: JwtService) { }
 
-    registerAccount(user: User): Observable<User> {
+    async registerAccount(user: User): Promise<User> {
         const { email, password } = user;
+        const hashedPassword = await this.hashpassword(password);
 
-        return this.hashPassword(password).pipe(
-            switchMap((hashedPassword: string) => {
-                return from(new this.userModel({ email, password: hashedPassword }).save());
-            }),
-        ).pipe(
-            map((user: User) => {
-                delete user.password;
-                console.log(user);
-                return { email: user.email, role: user.role } as User;
-            })
-        );
+        const newUser = await new this.userModel({ email, password: hashedPassword }).save();
+        return { email: newUser.email, role: newUser.role } as User;
     }
 
-    hashPassword(password: string): Observable<string> {
-        return from(bcrypt.hash(password, 12));
+    private hashpassword(password: string): Promise<string> {
+        return bcrypt.hash(password, 12);
     }
 
-    login(user: User): Observable<string> {
+    async login(user: User): Promise<string> {
         const { email, password } = user;
-        return this.validateUser(email, password).pipe(
-            switchMap((user: User) => {
-                if (user) {
-                    return from(this.jwtService.signAsync({ user }))
-                }
-            })
-        );
+        const userValid = await this.authenticationUser(email, password);
+
+        if (userValid) {
+            return await this.jwtService.signAsync({ user });
+        }
     }
 
-    validateUser(email: string, password: string): Observable<User> {
-        return from(this.userModel.findOne({ email }).select('+password')).pipe(
-            switchMap((user: User) =>
-                from(bcrypt.compare(password, user.password)).pipe(
-                    map((isValidePassword: boolean) => {
-                        if (isValidePassword) {
-                            delete user.password;
-                            return { email: user.email, role: user.role } as User;
-                        }
-                    })
-                )
-            )
-        )
+    private async authenticationUser(email: string, password: string): Promise<User> {
+        const user = await this.userModel.findOne({ email }).select('+password').exec();
+        const isValidePassword = await bcrypt.compare(password, user.password);
+
+        if (isValidePassword) {
+            return { email: user.email, role: user.role } as User;
+        }
     }
 }

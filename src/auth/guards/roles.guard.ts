@@ -25,3 +25,8 @@ export class RolesGuard implements CanActivate {
     return requiredRoles.some((role) => user.role?.includes(role));
   }
 }
+
+// in controller to use
+// @Roles(rola)
+// @UseGuards(RolesGuard)
+// https://www.youtube.com/watch?v=yZWcd77l9jk
