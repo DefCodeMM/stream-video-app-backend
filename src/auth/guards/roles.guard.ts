@@ -16,7 +16,7 @@ export class RolesGuard implements CanActivate {
       context.getClass()
     ])
 
-    if(!requiredRoles) {
+    if (!requiredRoles) {
       return true;
     }
 
@@ -25,8 +25,3 @@ export class RolesGuard implements CanActivate {
     return requiredRoles.some((role) => user.role?.includes(role));
   }
 }
-
-// in controller 
-// @Roles(rola)
-// @UseGuards(RolesGuard)
-// https://www.youtube.com/watch?v=yZWcd77l9jk
