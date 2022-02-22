@@ -5,7 +5,7 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { from, Observable } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
-import { User } from 'src/auth/entity/user';
+import { User } from 'src/auth/entity/user.model';
 
 
 @Injectable()
@@ -22,7 +22,8 @@ export class AuthService {
         ).pipe(
             map((user: User) => {
                 delete user.password;
-                return user;
+                console.log(user);
+                return { email: user.email, role: user.role } as User;
             })
         );
     }
@@ -49,7 +50,7 @@ export class AuthService {
                     map((isValidePassword: boolean) => {
                         if (isValidePassword) {
                             delete user.password;
-                            return user;
+                            return { email: user.email, role: user.role } as User;
                         }
                     })
                 )
