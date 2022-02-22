@@ -8,7 +8,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [16.x, 17.x]
+        node-version: [17.x]
         
     steps:
       - uses: actions/checkout@v2
@@ -18,6 +18,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
-      - run: npm run start:dev
+      - run: npm run build
       # mocks need to be created, for now test only specific file
-      - run: npm test
+      - run: npm run test
